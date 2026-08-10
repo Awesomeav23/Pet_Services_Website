@@ -20,8 +20,7 @@ Built from scratch with **React**, **JavaScript (ES6+)**, **HTML5** and **CSS3**
 - [Performance](#performance)
 - [Deployment](#deployment)
 - [All available commands](#all-available-commands)
-- [What this project does *not* include](#what-this-project-does-not-include)
-- [Possible next steps](#possible-next-steps)
+- [Roadmap](#roadmap)
 
 ---
 
@@ -405,28 +404,15 @@ Both config files are already included:
 
 ---
 
-## What this project does *not* include
+## Roadmap
 
-Being straightforward about the boundaries:
+The front end is complete. The next phase turns it into a full-stack application:
 
-- **No backend.** There is no server and no database. Booking requests are saved to your browser's `localStorage` and go nowhere else. Clear your browser data and they're gone.
-- **No user accounts.** No sign-up, no login, no saved booking history.
-- **No payments.** The site deliberately states that nothing is charged online.
-- **No automated tests.** There is linting and a contrast audit, but no unit or end-to-end test suite.
-- **No real availability checking.** The form accepts any future date; nothing verifies a slot is actually free.
-- **Placeholder content.** Staff, reviews, address and phone number are invented.
-
----
-
-## Possible next steps
-
-Roughly in order of how much they'd add:
-
-1. **A real backend** — Node/Express with a PostgreSQL database, so bookings persist properly and staff can see them.
+1. **Backend API** — Node/Express with PostgreSQL, so bookings persist server-side.
 2. **Automated tests** — Vitest and React Testing Library for components, Playwright for full user journeys.
-3. **User accounts** — so owners can save pet profiles and see past visits.
-4. **A staff dashboard** — to approve, decline and reschedule incoming requests.
-5. **Real scheduling** — availability windows and capacity limits, so double-booking is impossible.
+3. **User accounts** — saved pet profiles and visit history.
+4. **Staff dashboard** — approve, decline and reschedule incoming requests.
+5. **Availability engine** — capacity limits and conflict detection.
 6. **Email notifications** — confirmations and reminders.
 7. **Continuous integration** — GitHub Actions running `npm run check` on every pull request.
 
