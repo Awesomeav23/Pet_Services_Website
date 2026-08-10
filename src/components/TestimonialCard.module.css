@@ -1,0 +1,67 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+  margin: 0;
+  padding: var(--space-5);
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.rating {
+  line-height: 1;
+}
+
+.stars {
+  font-size: var(--text-lg);
+  letter-spacing: 0.1em;
+  color: var(--color-brand);
+}
+
+.quote {
+  flex: 1;
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 1.7;
+}
+
+.quote p::before {
+  content: '“';
+}
+
+.quote p::after {
+  content: '”';
+}
+
+.attribution {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.author {
+  font-style: normal;
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.pet {
+  font-size: var(--text-xs);
+  color: var(--color-ink-soft);
+}
+
+.service {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-brand-tint);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-brand-strong);
+}
