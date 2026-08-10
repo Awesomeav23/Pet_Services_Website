@@ -234,7 +234,6 @@ export default function Booking() {
                           value={service.id}
                           checked={form.serviceId === service.id}
                           onChange={handleChange}
-                          aria-invalid={errors.serviceId ? true : undefined}
                         />
                         <label className={styles.serviceLabel} htmlFor={inputId}>
                           <span className={styles.serviceIcon} aria-hidden="true">

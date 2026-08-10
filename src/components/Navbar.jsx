@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { NAV_LINKS } from '../data/navigation.js';
 import styles from './Navbar.module.css';
@@ -16,12 +16,6 @@ import styles from './Navbar.module.css';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleRef = useRef(null);
-  const { pathname } = useLocation();
-
-  // Close the panel whenever the route changes.
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
 
   // Escape closes the panel and hands focus back to the control that opened it.
   useEffect(() => {
@@ -44,7 +38,14 @@ export default function Navbar() {
   return (
     <header className={styles.header}>
       <div className={`container ${styles.bar}`}>
-        <NavLink to="/" className={styles.brand}>
+        {/* Navigating closes the mobile panel. Handled on the links themselves
+            rather than in an effect on the route, which would cause a second
+            render pass on every navigation. */}
+        <NavLink
+          to="/"
+          className={styles.brand}
+          onClick={() => setIsMenuOpen(false)}
+        >
           <span className={styles.brandMark} aria-hidden="true">
             🐾
           </span>
@@ -76,7 +77,12 @@ export default function Navbar() {
           <ul className={styles.navList}>
             {NAV_LINKS.map(({ to, label, end }) => (
               <li key={to}>
-                <NavLink to={to} end={end} className={linkClass}>
+                <NavLink
+                  to={to}
+                  end={end}
+                  className={linkClass}
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   {label}
                 </NavLink>
               </li>
