@@ -14,7 +14,15 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 /** Accepts 10-digit US numbers with common separators. */
 const PHONE_DIGITS = /\d/g;
 
-export const isBlank = (value) => !value || String(value).trim() === '';
+/**
+ * Empty means null, undefined, or nothing but whitespace.
+ *
+ * Checked explicitly rather than with `!value`, which would also class the
+ * number 0 as blank — a pet age of 0 for a puppy under a year old is a real
+ * answer, not a missing one.
+ */
+export const isBlank = (value) =>
+  value === undefined || value === null || String(value).trim() === '';
 
 export const validateRequired = (value, label) =>
   isBlank(value) ? `${label} is required` : undefined;
