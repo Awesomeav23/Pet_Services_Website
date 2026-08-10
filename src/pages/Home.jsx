@@ -1,9 +1,11 @@
 import Hero from '../components/Hero.jsx';
 import SectionHeading from '../components/SectionHeading.jsx';
 import ServiceGrid from '../components/ServiceGrid.jsx';
+import TestimonialCard from '../components/TestimonialCard.jsx';
 import Button from '../components/Button.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import { getPopularServices } from '../data/services.js';
+import { getFeaturedTestimonials } from '../data/testimonials.js';
 import styles from './Home.module.css';
 
 const STEPS = [
@@ -28,6 +30,7 @@ export default function Home() {
   useDocumentTitle('Home');
 
   const popularServices = getPopularServices();
+  const featuredTestimonials = getFeaturedTestimonials();
 
   return (
     <>
@@ -71,6 +74,30 @@ export default function Home() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="reviews-title">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Owner reviews"
+            title="Why owners stay with us"
+            description="A few words from people whose pets we see every week."
+            id="reviews-title"
+            align="center"
+          />
+          <ul className={styles.reviews}>
+            {featuredTestimonials.map((testimonial) => (
+              <li className={styles.reviewItem} key={testimonial.id}>
+                <TestimonialCard testimonial={testimonial} />
+              </li>
+            ))}
+          </ul>
+          <div className={styles.popularAction}>
+            <Button to="/about" variant="ghost">
+              Read more reviews
+            </Button>
+          </div>
         </div>
       </section>
 

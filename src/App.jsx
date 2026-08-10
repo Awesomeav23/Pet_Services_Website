@@ -6,16 +6,15 @@ import Home from './pages/Home.jsx';
 import Services from './pages/Services.jsx';
 import ServiceDetail from './pages/ServiceDetail.jsx';
 import Booking from './pages/Booking.jsx';
-import Placeholder from './pages/Placeholder.jsx';
+import About from './pages/About.jsx';
+import Contact from './pages/Contact.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 /**
  * Route table for the site.
  *
- * The four Placeholder routes below keep every navigation destination
- * reachable while the remaining sections are built; each is swapped for its
- * real page as that section lands. Anything unmatched falls through to
- * NotFound.
+ * Every section is live; anything unmatched falls through to NotFound, which
+ * also backs an unknown :serviceId.
  */
 export default function App() {
   return (
@@ -24,31 +23,11 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-
           <Route path="/services" element={<Services />} />
           <Route path="/services/:serviceId" element={<ServiceDetail />} />
-
           <Route path="/booking" element={<Booking />} />
-
-          <Route
-            path="/about"
-            element={
-              <Placeholder
-                title="About"
-                description="Meet the team and read what local owners say about us."
-              />
-            }
-          />
-          <Route
-            path="/contact"
-            element={
-              <Placeholder
-                title="Contact"
-                description="Opening hours, directions and a message form are coming shortly."
-              />
-            }
-          />
-
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

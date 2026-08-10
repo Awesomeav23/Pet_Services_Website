@@ -41,6 +41,29 @@
   font-size: var(--text-sm);
 }
 
+.reviews {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reviewItem {
+  display: flex;
+}
+
+.reviewItem > * {
+  width: 100%;
+}
+
+@media (min-width: 52rem) {
+  .reviews {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .popularAction {
   display: flex;
   justify-content: center;
