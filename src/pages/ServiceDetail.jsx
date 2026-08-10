@@ -99,7 +99,8 @@ export default function ServiceDetail() {
               </div>
             </dl>
 
-            <Button to="/booking" fullWidth>
+            {/* Deep link so the booking form opens with this service chosen. */}
+            <Button to={`/booking?service=${id}`} fullWidth>
               Book {name}
             </Button>
             <p className={styles.asideNote}>

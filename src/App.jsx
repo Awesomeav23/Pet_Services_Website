@@ -5,6 +5,7 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 import Home from './pages/Home.jsx';
 import Services from './pages/Services.jsx';
 import ServiceDetail from './pages/ServiceDetail.jsx';
+import Booking from './pages/Booking.jsx';
 import Placeholder from './pages/Placeholder.jsx';
 import NotFound from './pages/NotFound.jsx';
 
@@ -27,15 +28,8 @@ export default function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/services/:serviceId" element={<ServiceDetail />} />
 
-          <Route
-            path="/booking"
-            element={
-              <Placeholder
-                title="Book a Visit"
-                description="The appointment request form is on its way."
-              />
-            }
-          />
+          <Route path="/booking" element={<Booking />} />
+
           <Route
             path="/about"
             element={
