@@ -1,7 +1,9 @@
 import Hero from '../components/Hero.jsx';
 import SectionHeading from '../components/SectionHeading.jsx';
+import ServiceGrid from '../components/ServiceGrid.jsx';
 import Button from '../components/Button.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
+import { getPopularServices } from '../data/services.js';
 import styles from './Home.module.css';
 
 const STEPS = [
@@ -25,11 +27,30 @@ const STEPS = [
 export default function Home() {
   useDocumentTitle('Home');
 
+  const popularServices = getPopularServices();
+
   return (
     <>
       <Hero />
 
-      <section className="section" aria-labelledby="how-it-works-title">
+      <section className="section" aria-labelledby="popular-title">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Most requested"
+            title="Where most owners start"
+            description="Three services book out first each week. Browse the full list to see everything we offer."
+            id="popular-title"
+          />
+          <ServiceGrid services={popularServices} label="Popular services" />
+          <div className={styles.popularAction}>
+            <Button to="/services" variant="secondary">
+              View all seven services
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--tint" aria-labelledby="how-it-works-title">
         <div className="container">
           <SectionHeading
             eyebrow="How it works"
@@ -53,7 +74,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section section--tint" aria-labelledby="cta-title">
+      <section className="section" aria-labelledby="cta-title">
         <div className={`container ${styles.cta}`}>
           <SectionHeading
             title="Ready when your pet is"

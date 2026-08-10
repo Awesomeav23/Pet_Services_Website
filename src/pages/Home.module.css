@@ -41,10 +41,19 @@
   font-size: var(--text-sm);
 }
 
+.popularAction {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-6);
+}
+
 .cta {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: var(--space-7) var(--space-5);
+  background-color: var(--color-brand-tint);
+  border-radius: var(--radius-lg);
 }
 
 @media (min-width: 52rem) {
