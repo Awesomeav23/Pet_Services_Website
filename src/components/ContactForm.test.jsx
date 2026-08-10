@@ -77,6 +77,12 @@ describe('ContactForm', () => {
       'true'
     );
 
+    // Submitting schedules a focus move to the error summary on the next
+    // animation frame. Typing before that lands lets the focus move interrupt
+    // the keystroke, so wait for it to settle first — which is also the order
+    // a real user works in: read the error, then fix the field.
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveFocus());
+
     await user.type(screen.getByLabelText(/your name/i), 'E');
 
     expect(screen.getByLabelText(/your name/i)).not.toHaveAttribute(

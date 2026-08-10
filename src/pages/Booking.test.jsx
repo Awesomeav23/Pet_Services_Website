@@ -120,6 +120,11 @@ describe('Booking page — step gating', () => {
       'true'
     );
 
+    // The failed submit schedules a focus move to the error summary on the
+    // next animation frame; typing before it lands lets that move interrupt
+    // the keystroke and makes this test flaky.
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveFocus());
+
     await user.type(screen.getByLabelText(/pet name/i), 'B');
 
     // The user should not have to resubmit to learn the problem is fixed.

@@ -36,10 +36,10 @@ npx playwright install chromium
 | 6a — Unit tests | ✅ Complete | 58 |
 | 6b — Component tests | ✅ Complete | 60 |
 | 6c — Page integration tests | ✅ Complete | 61 |
-| 6d — End-to-end and accessibility | Not started | — |
+| 6d — End-to-end and accessibility | ✅ Complete | 86 |
 | 6e — Continuous integration | Not started | — |
 
-**179 tests passing.** Coverage against the targets set out below:
+**179 unit and integration tests, plus 86 end-to-end checks** across three viewports (375, 768, 1280). Coverage against the targets set out below:
 
 | Area | Coverage | Target |
 | --- | --- | --- |
@@ -48,11 +48,16 @@ npx playwright install chromium
 | `src/components` | 88.0% | ~80% |
 | Overall | **91.7%** | 75%+ |
 
-Three defects were found by writing these tests rather than by inspection:
+Six defects were found by writing these tests rather than by inspection:
 
 - `isBlank` classed the number `0` as blank, so a pet age of 0 would have read as a missing field (6a).
 - The `validatePhone` digit-count fallback was unreachable by any existing test, and needed a no-digits case to cover it (6a).
 - The featured-reviews list on the home page had no accessible name, so it could not be distinguished from the services list (6c).
+- **The skip link was unreachable on page load** (6d). `ScrollToTop` moved focus to `<main>` on the first render as well as on navigations, so a keyboard user landed past the header and could never Tab to the skip link — the opposite of what it exists for. The first render is now exempt.
+- **A route change unmounted the entire page shell** (6d). The `Suspense` boundary wrapped `Layout`, so navigating to a lazily loaded route replaced the header, navigation and footer with the loading state, and took `#main-content` out of the document exactly when focus needed to move to it. The boundary now sits around the `Outlet` inside `Layout`.
+- **The 404 numerals failed contrast** (6d). They rendered in `--color-brand-tint` at 1.14:1 against the page background, well under the 3:1 large-text threshold. Caught by the axe scan and now covered by the token audit too.
+
+The last two were invisible to the jsdom tests: one needed real Tab-order behaviour and the other needed an actual chunk load. They are the argument for phase 6d existing at all.
 
 One correction to the plan below: the **Dogs** filter returns all 7 services, not 5. Every service in the catalogue accepts dogs; only four also accept cats. The tests derive both counts from the catalogue rather than hardcoding them.
 
