@@ -1,0 +1,110 @@
+.hero {
+  background: linear-gradient(
+    170deg,
+    var(--color-brand-tint) 0%,
+    var(--color-surface) 70%
+  );
+  padding-block: var(--space-7) var(--space-8);
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brand-strong);
+}
+
+.title {
+  max-width: 16ch;
+}
+
+.lede {
+  max-width: 52ch;
+  font-size: var(--text-lg);
+  color: var(--color-ink-soft);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* ---------- Highlights ---------- */
+.highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.highlight {
+  display: flex;
+  flex-direction: column;
+}
+
+.highlightValue {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-brand-strong);
+}
+
+.highlightLabel {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+}
+
+/* ---------- Decorative art ---------- */
+.art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 16rem;
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.artPaw {
+  font-size: clamp(5rem, 14vw, 9rem);
+  line-height: 1;
+}
+
+.artPawSmall {
+  position: absolute;
+  right: 12%;
+  bottom: 12%;
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  line-height: 1;
+}
+
+@media (min-width: 60rem) {
+  .inner {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-8);
+  }
+
+  .art {
+    min-height: 22rem;
+  }
+}
