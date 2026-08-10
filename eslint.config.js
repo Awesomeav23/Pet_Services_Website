@@ -61,4 +61,12 @@ export default [
       globals: { ...globals.node },
     },
   },
+
+  // Playwright specs and config run in Node, not the browser.
+  {
+    files: ['e2e/**/*.js', 'playwright.config.js', 'vitest.config.js'],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+  },
 ];
