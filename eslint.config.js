@@ -13,7 +13,8 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
  * lint` instead of shipping.
  */
 export default [
-  { ignores: ['dist/**', 'node_modules/**'] },
+  // dist and coverage are generated output, not source.
+  { ignores: ['dist/**', 'coverage/**', 'node_modules/**'] },
 
   js.configs.recommended,
 
