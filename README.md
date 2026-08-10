@@ -20,7 +20,6 @@ Built from scratch with **React**, **JavaScript (ES6+)**, **HTML5** and **CSS3**
 - [Performance](#performance)
 - [Deployment](#deployment)
 - [All available commands](#all-available-commands)
-- [Roadmap](#roadmap)
 
 ---
 
@@ -401,20 +400,6 @@ Both config files are already included:
 | `npm run check` | Run all three: lint, contrast, then build |
 
 `npm run check` is the one to run before committing — if it passes, everything is in order.
-
----
-
-## Roadmap
-
-The front end is complete. The next phase turns it into a full-stack application:
-
-1. **Backend API** — Node/Express with PostgreSQL, so bookings persist server-side.
-2. **Automated tests** — Vitest and React Testing Library for components, Playwright for full user journeys.
-3. **User accounts** — saved pet profiles and visit history.
-4. **Staff dashboard** — approve, decline and reschedule incoming requests.
-5. **Availability engine** — capacity limits and conflict detection.
-6. **Email notifications** — confirmations and reminders.
-7. **Continuous integration** — GitHub Actions running `npm run check` on every pull request.
 
 ---
 
