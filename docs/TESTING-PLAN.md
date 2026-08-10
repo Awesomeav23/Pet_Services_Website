@@ -29,6 +29,25 @@ npx playwright install chromium
 
 ---
 
+## Progress
+
+| Phase | Status | Tests |
+| --- | --- | --- |
+| 6a — Unit tests | ✅ Complete | 58 |
+| 6b — Component tests | ✅ Complete | 60 |
+| 6c — Page integration tests | Not started | — |
+| 6d — End-to-end and accessibility | Not started | — |
+| 6e — Continuous integration | Not started | — |
+
+**118 tests passing.** `src/utils` is at 100% coverage; every component covered in 6b is at 100% lines and branches.
+
+Two defects were found by writing these tests rather than by inspection:
+
+- `isBlank` classed the number `0` as blank, so a pet age of 0 would have read as a missing field (6a).
+- The `validatePhone` digit-count fallback was unreachable by any existing test, and needed a no-digits case to cover it (6a).
+
+---
+
 ## Phase 6a — Unit tests (~2 days)
 
 Pure functions first: no DOM, no React, fastest to write and highest certainty.
