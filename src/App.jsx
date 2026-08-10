@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import Home from './pages/Home.jsx';
+import Services from './pages/Services.jsx';
+import ServiceDetail from './pages/ServiceDetail.jsx';
 import Placeholder from './pages/Placeholder.jsx';
 import NotFound from './pages/NotFound.jsx';
 
@@ -22,15 +24,9 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
 
-          <Route
-            path="/services"
-            element={
-              <Placeholder
-                title="Services"
-                description="Our seven service categories, with pricing and filters, are being added next."
-              />
-            }
-          />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:serviceId" element={<ServiceDetail />} />
+
           <Route
             path="/booking"
             element={
