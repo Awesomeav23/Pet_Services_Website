@@ -66,7 +66,7 @@ The site is being built section by section:
 
 - [x] **Step 1 — Foundation:** project setup, design tokens, accessible layout shell (header, nav, footer, skip link), routing, home page
 - [x] **Step 2 — Services:** 7 service categories, service cards, pet-type filtering, detail pages
-- [ ] **Step 3 — Booking:** multi-step appointment request form with validation and confirmation
+- [x] **Step 3 — Booking:** multi-step appointment request form with validation and confirmation
 - [ ] **Step 4 — About & Contact:** team profiles, testimonials, FAQ accordion, contact form
 - [ ] **Step 5 — Polish:** full keyboard/contrast audit, responsive pass, performance
 
