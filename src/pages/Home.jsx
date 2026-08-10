@@ -86,7 +86,7 @@ export default function Home() {
             id="reviews-title"
             align="center"
           />
-          <ul className={styles.reviews}>
+          <ul className={styles.reviews} aria-label="Featured reviews">
             {featuredTestimonials.map((testimonial) => (
               <li className={styles.reviewItem} key={testimonial.id}>
                 <TestimonialCard testimonial={testimonial} />

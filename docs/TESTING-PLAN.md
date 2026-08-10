@@ -35,16 +35,26 @@ npx playwright install chromium
 | --- | --- | --- |
 | 6a — Unit tests | ✅ Complete | 58 |
 | 6b — Component tests | ✅ Complete | 60 |
-| 6c — Page integration tests | Not started | — |
+| 6c — Page integration tests | ✅ Complete | 61 |
 | 6d — End-to-end and accessibility | Not started | — |
 | 6e — Continuous integration | Not started | — |
 
-**118 tests passing.** `src/utils` is at 100% coverage; every component covered in 6b is at 100% lines and branches.
+**179 tests passing.** Coverage against the targets set out below:
 
-Two defects were found by writing these tests rather than by inspection:
+| Area | Coverage | Target |
+| --- | --- | --- |
+| `src/utils` | 100% | 100% |
+| `src/pages` | 98.4% | ~70% |
+| `src/components` | 88.0% | ~80% |
+| Overall | **91.7%** | 75%+ |
+
+Three defects were found by writing these tests rather than by inspection:
 
 - `isBlank` classed the number `0` as blank, so a pet age of 0 would have read as a missing field (6a).
 - The `validatePhone` digit-count fallback was unreachable by any existing test, and needed a no-digits case to cover it (6a).
+- The featured-reviews list on the home page had no accessible name, so it could not be distinguished from the services list (6c).
+
+One correction to the plan below: the **Dogs** filter returns all 7 services, not 5. Every service in the catalogue accepts dogs; only four also accept cats. The tests derive both counts from the catalogue rather than hardcoding them.
 
 ---
 
