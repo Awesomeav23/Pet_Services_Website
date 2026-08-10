@@ -1,0 +1,82 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+.submit {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--color-brand);
+  color: var(--color-ink-inverse);
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.submit:hover {
+  background-color: var(--color-brand-strong);
+}
+
+/* ---------- Sent state ---------- */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
+  background-color: var(--color-card);
+  border: 2px solid var(--color-success);
+  border-radius: var(--radius-lg);
+}
+
+.success:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.success p {
+  max-width: 48ch;
+  color: var(--color-ink-soft);
+  font-size: var(--text-sm);
+}
+
+.successIcon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--color-success);
+  color: var(--color-ink-inverse);
+  border-radius: var(--radius-pill);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.link {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--color-brand-strong);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+@media (min-width: 40rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
