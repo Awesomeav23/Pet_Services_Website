@@ -29,8 +29,8 @@
   --color-success: #1c6b3f; /* 5.6:1 with white text */
 
   /* Lines + focus */
-  --color-border: #e7ded4;
-  --color-border-strong: #c9bcae;
+  --color-border: #e7ded4; /* decorative dividers only, never a control edge */
+  --color-border-strong: #94836f; /* 3.66:1 on white — WCAG 1.4.11 for control edges */
   --color-focus: #0b5cd5;
 
   /* Typography */
