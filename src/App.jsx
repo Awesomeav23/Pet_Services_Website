@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import Layout from './components/Layout.jsx';
@@ -19,37 +19,25 @@ const About = lazy(() => import('./pages/About.jsx'));
 const Contact = lazy(() => import('./pages/Contact.jsx'));
 const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
-/**
- * Shown while a route chunk loads.
- *
- * role="status" announces the wait instead of leaving screen-reader users on a
- * silent blank page.
- */
-function RouteFallback() {
-  return (
-    <div className="section container" role="status">
-      <p>Loading…</p>
-    </div>
-  );
-}
-
 export default function App() {
   return (
     <>
       <ScrollToTop />
-      <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/services/:serviceId" element={<ServiceDetail />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </Suspense>
+      {/* The Suspense boundary lives inside Layout, around the Outlet. Placing
+          it here instead would swap the whole shell — header, nav and footer —
+          for the loading state on every route change, and would take
+          #main-content out of the document just as focus needs to move to it. */}
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:serviceId" element={<ServiceDetail />} />
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
     </>
   );
 }

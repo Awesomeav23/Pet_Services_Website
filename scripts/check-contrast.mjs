@@ -88,6 +88,7 @@ const PAIRS = [
   { fg: '--color-border-strong', bg: '--color-surface', min: 3, use: 'Control borders on page background' },
   { fg: '--color-border-strong', bg: '--color-surface-alt', min: 3, use: 'Control borders on tinted sections' },
   { fg: '--color-brand', bg: '--color-card', min: 3, use: 'Selected control border' },
+  { fg: '--color-border-strong', bg: '--color-surface', min: 3, use: '404 numerals (large text)' },
 ];
 
 const tokens = readTokens();
