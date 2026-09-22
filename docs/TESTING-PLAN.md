@@ -37,7 +37,7 @@ npx playwright install chromium
 | 6b — Component tests | ✅ Complete | 60 |
 | 6c — Page integration tests | ✅ Complete | 61 |
 | 6d — End-to-end and accessibility | ✅ Complete | 86 |
-| 6e — Continuous integration | Not started | — |
+| 6e — Continuous integration | ✅ Complete | — |
 
 **179 unit and integration tests, plus 86 end-to-end checks** across three viewports (375, 768, 1280). Coverage against the targets set out below:
 

@@ -1,5 +1,7 @@
 # 🐾 Pawsome Pet Services
 
+[![CI](https://github.com/Awesomeav23/Pet_Services_Website/actions/workflows/ci.yml/badge.svg)](https://github.com/Awesomeav23/Pet_Services_Website/actions/workflows/ci.yml)
+
 A responsive website for a fictional pet care business — grooming, boarding, daycare, dog walking, training, veterinary wellness and pet taxi. Visitors can browse the services on offer and send an appointment request through a multi-step form.
 
 Built from scratch with **React**, **JavaScript (ES6+)**, **HTML5** and **CSS3**. No UI framework, no component library, no CSS toolkit — every button, card, form field and layout is hand-written.
@@ -16,6 +18,7 @@ Built from scratch with **React**, **JavaScript (ES6+)**, **HTML5** and **CSS3**
 - [How the project is organised](#how-the-project-is-organised)
 - [How it works under the hood](#how-it-works-under-the-hood)
 - [Accessibility](#accessibility)
+- [Testing](#testing)
 - [Responsive design](#responsive-design)
 - [Performance](#performance)
 - [Deployment](#deployment)
@@ -356,6 +359,45 @@ Breakpoints are at 40rem, 48rem, 52rem, 56rem, 60rem and 64rem (1rem = 16px, so 
 
 ---
 
+## Testing
+
+Two suites, both run automatically on every push by GitHub Actions.
+
+### Unit and integration tests — Vitest + React Testing Library
+
+**189 tests, 90.5% coverage.** These run in a simulated DOM, so they're fast enough to keep running while you work (`npm run test:watch`).
+
+| Area | Coverage |
+| --- | --- |
+| `src/utils` — formatters and validation | 100% |
+| `src/api` — the fetch wrapper | 100% |
+| `src/pages` | 95.6% |
+| `src/hooks` | 93.2% |
+| `src/components` | 85.6% |
+
+They test **behaviour, not markup** — queries find elements the way a user would, by visible label or role, rather than by CSS class. A styling refactor doesn't break them; a behaviour change does.
+
+The assertions deliberately protect design decisions. For example, one test asserts each service card contains *exactly one link*: the whole card is clickable via a single stretched link, so adding a second link would double the number of tab stops across the grid.
+
+### Browser tests — Playwright + axe
+
+**86 checks at 375px, 768px and 1280px**, run against the real production build. Each width is a separate project, so every check runs from a cold page load at that size rather than a mid-test resize.
+
+| Spec | What it verifies |
+| --- | --- |
+| `booking` | The full journey: home → service → deep-linked form → confirmation, plus a draft surviving a real page reload |
+| `keyboard` | Skip link is the first tab stop; focus moves on navigation but not on load; arrow keys in the filter group; Enter and Space on the accordion; Escape restoring focus |
+| `responsive` | No horizontal scrolling on any route at any width; grid reflow 1 → 2 → 3 columns; navigation collapse; 44px touch targets |
+| `a11y` | An axe scan of all seven routes, plus the booking form in its error state and the About page fully expanded |
+
+### Why both
+
+The browser suite exists because some things simply cannot be checked in a simulated DOM — and it earned its place immediately by finding three real bugs the other checks had missed:
+
+- **The skip link was unreachable on page load.** Focus was being moved into `<main>` on first render as well as on navigation, so a keyboard user started past the header and could never tab back to the skip link — the opposite of its purpose.
+- **Changing pages unmounted the whole shell.** The loading boundary wrapped the layout rather than the page content, so navigating to any lazily loaded route briefly replaced the header, navigation and footer with a loading message.
+- **The 404 numerals failed contrast** at 1.14:1, against the 3:1 minimum for large text.
+
 ## Performance
 
 Routes are **code split** using `React.lazy`. Instead of shipping the entire site in one JavaScript file, each page is bundled separately and downloaded only when someone visits it. Someone who reads the home page and leaves never downloads the booking form.
@@ -397,7 +439,11 @@ Both config files are already included:
 | `npm run preview` | Serve the built files locally, to check the real build |
 | `npm run lint` | Check code quality and accessibility rules |
 | `npm run check:contrast` | Measure every colour pair against WCAG |
-| `npm run check` | Run all three: lint, contrast, then build |
+| `npm test` | Run the unit and integration tests |
+| `npm run test:watch` | Re-run tests as you save |
+| `npm run test:coverage` | Tests with a coverage report |
+| `npm run test:e2e` | Run the browser tests (builds first) |
+| `npm run check` | Lint, contrast, tests, then build |
 
 `npm run check` is the one to run before committing — if it passes, everything is in order.
 

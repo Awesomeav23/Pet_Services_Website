@@ -14,7 +14,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
  */
 export default [
   // dist and coverage are generated output, not source.
-  { ignores: ['dist/**', 'coverage/**', 'node_modules/**'] },
+  { ignores: ['dist/**', 'coverage/**', '**/node_modules/**'] },
 
   js.configs.recommended,
 
@@ -65,6 +65,14 @@ export default [
   // Playwright specs and config run in Node, not the browser.
   {
     files: ['e2e/**/*.js', 'playwright.config.js', 'vitest.config.js'],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+  },
+
+  // The Express API is Node too, and has no JSX or React to check.
+  {
+    files: ['server/**/*.{js,mjs}'],
     languageOptions: {
       globals: { ...globals.node },
     },
