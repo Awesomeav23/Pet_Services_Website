@@ -6,6 +6,8 @@ A responsive website for a fictional pet care business — grooming, boarding, d
 
 Built from scratch with **React**, **JavaScript (ES6+)**, **HTML5** and **CSS3**. No UI framework, no component library, no CSS toolkit — every button, card, form field and layout is hand-written.
 
+Behind it is a **Node.js and Express** API over **PostgreSQL**: five REST endpoints and three tables. The service catalogue is read from the database rather than bundled, appointment requests are stored and come back with a reference, and contact messages are kept — so a booking survives the tab being closed, which the earlier build could not do.
+
 > **This is a portfolio project.** Pawsome Pet Services is not a real business, the staff and reviews are invented, and nothing you type is sent anywhere. Form submissions are stored in your own browser and go no further.
 
 ---
@@ -60,19 +62,38 @@ The About page has the company story, staff profiles, customer reviews and an ex
 
 You'll need [Node.js](https://nodejs.org) **version 18 or newer**. Check what you have with `node --version`.
 
+The site reads its catalogue from the API, so both halves need to be running.
+Nothing else has to be installed: PostgreSQL comes from the `embedded-postgres`
+package, so there is no Homebrew, no Docker and no admin rights involved.
+
 ```bash
 # 1. Get the code
 git clone https://github.com/Awesomeav23/Pet_Services_Website.git
 cd Pet_Services_Website
 
-# 2. Install the dependencies
+# 2. Install the dependencies, both halves
 npm install
+npm install --prefix server
 
-# 3. Start the development server
+# 3. Start PostgreSQL, apply the schema and seed the catalogue
+cd server
+cp .env.example .env
+npm run setup
+
+# 4. Start the API, and leave it running
 npm run dev
 ```
 
-Then open **http://localhost:5173** in your browser.
+Then in a second terminal:
+
+```bash
+# 5. Start the site
+npm run dev
+```
+
+Then open **http://localhost:5173** in your browser. The API answers on
+**http://localhost:4000**; `npm run db:stop` in `server/` shuts PostgreSQL down
+when you are finished.
 
 While `npm run dev` is running, any file you save appears in the browser almost instantly — you don't need to refresh. This is called **hot module replacement**, and it's one of the main reasons this project uses Vite.
 
@@ -207,7 +228,7 @@ Pet_Services_Website/
 
 ### Why content lives in `src/data/`
 
-The services, staff profiles, reviews and FAQs aren't written into the components — they're plain JavaScript files that export arrays of objects:
+The staff profiles, reviews and FAQs are plain JavaScript files that export arrays of objects. The service catalogue started the same way and now lives in PostgreSQL — `src/data/services.js` stayed put as the file the database is seeded from, so the seven services are still defined in exactly one place, and the bundle no longer carries a copy of them:
 
 ```js
 export const SERVICES = [
@@ -226,7 +247,7 @@ export const SERVICES = [
 Two benefits:
 
 1. **Adding an eighth service is a data edit, not a code edit.** Add an object to the array and it appears on the services page, in the filters, in the booking form dropdown and in the related-services section — automatically.
-2. **It's shaped like a real API response.** If this project later gained a backend, you'd replace the import with a `fetch()` call and the components wouldn't need to change at all.
+2. **It's shaped like a real API response** — and that claim has since been tested. When the backend was added, `GET /api/services` returned the same shape the import had, so `ServiceCard`, `ServiceFilter` and the related-services section were untouched. What did change is everything around the data rather than the data itself: the pages had to grow loading, error and retry states, because a fetch can fail and a module import cannot. That is the part designing for a future API does not save you.
 
 ---
 

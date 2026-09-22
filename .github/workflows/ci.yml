@@ -54,9 +54,39 @@ jobs:
           retention-days: 7
 
   # The browser suite: keyboard order, responsive layout and the axe scan.
+  #
+  # These drive a real browser against a real API — nothing is mocked, which is
+  # the point of having them. So the job has to stand the whole stack up:
+  # Postgres, the schema, the seed, and the server, before Playwright starts.
   e2e:
     name: End-to-end and accessibility
     runs-on: ubuntu-latest
+
+    # The API talks to this over localhost:5432. Ports are published so the
+    # server process, which runs on the runner rather than in a container, can
+    # reach it.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pawsome
+        ports:
+          - 5432:5432
+        # Without this the first migration can land before Postgres accepts
+        # connections, which fails in a way that looks like a bad query.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pawsome
+      # The origin Playwright serves the production build from.
+      CORS_ORIGIN: http://localhost:4173
+      PORT: 4000
 
     steps:
       - name: Check out the repository
@@ -70,6 +100,30 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install API dependencies
+        run: npm ci --prefix server
+
+      # Called directly rather than through the npm scripts: those pass
+      # --env-file=.env, and .env is gitignored, so it does not exist here.
+      # The environment above supplies the same values.
+      - name: Apply the schema and seed the catalogue
+        run: |
+          node server/src/migrate.js
+          node server/src/seed.js
+
+      # Polled rather than slept on: a fixed sleep is either too short on a
+      # slow runner or wasted time on a fast one.
+      - name: Start the API
+        run: |
+          node server/src/index.js &
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:4000/api/services > /dev/null; then
+              echo "API ready after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "API did not start within 30s"; exit 1
 
       # --with-deps pulls the system libraries Chromium needs on a bare runner.
       - name: Install Playwright browsers
