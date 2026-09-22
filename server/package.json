@@ -1,0 +1,27 @@
+{
+  "name": "pawsome-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Express + PostgreSQL API serving the Pawsome Pet Services catalogue and form submissions.",
+  "scripts": {
+    "dev": "node --env-file=.env --watch src/index.js",
+    "start": "node src/index.js",
+    "db:start": "node scripts/db.mjs start",
+    "db:stop": "node scripts/db.mjs stop",
+    "db:migrate": "node --env-file=.env src/migrate.js",
+    "db:seed": "node --env-file=.env src/seed.js",
+    "db:reset": "npm run db:migrate && npm run db:seed",
+    "setup": "npm run db:start && npm run db:reset"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "embedded-postgres": "^18.4.0-beta.17"
+  }
+}
