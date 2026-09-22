@@ -113,3 +113,20 @@ export const STEP_VALIDATORS = [
 
 export const validateStep = (stepIndex, form) =>
   STEP_VALIDATORS[stepIndex] ? STEP_VALIDATORS[stepIndex](form) : {};
+
+/**
+ * Contact form validation.
+ *
+ * Lives here beside the booking validators so the API can import the same
+ * rules rather than keeping a second copy in step by hand.
+ */
+export const validateContactMessage = (form) =>
+  compact({
+    name: validateRequired(form.name, 'Your name'),
+    email: validateEmail(form.email),
+    message: isBlank(form.message)
+      ? 'Message is required'
+      : String(form.message).trim().length < 10
+        ? 'Please give us a little more detail (at least 10 characters)'
+        : undefined,
+  });

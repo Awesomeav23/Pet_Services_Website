@@ -9,6 +9,17 @@ import { SERVICES } from '../data/services.js';
 const grid = () => screen.getByRole('list', { name: /available services/i });
 
 /**
+ * Renders and waits for the catalogue request to resolve.
+ *
+ * The grid is fetched rather than imported, so nothing is on screen for the
+ * first paint. Every assertion about card content has to wait for that.
+ */
+const renderServices = async () => {
+  renderWithRouter(<Services />);
+  await screen.findByRole('list', { name: /available services/i });
+};
+
+/**
  * Counted by link rather than by list item.
  *
  * Each card contains its own list of pet-type tags, so getAllByRole('listitem')
@@ -25,13 +36,13 @@ const DOG_COUNT = SERVICES.filter((s) => s.petTypes.includes('dog')).length;
 const CAT_COUNT = SERVICES.filter((s) => s.petTypes.includes('cat')).length;
 
 describe('Services page', () => {
-  it('lists every service on first load', () => {
-    renderWithRouter(<Services />);
+  it('lists every service on first load', async () => {
+    await renderServices();
     expect(cards()).toHaveLength(SERVICES.length);
   });
 
-  it('reports the count in a live region, so filtering is announced', () => {
-    renderWithRouter(<Services />);
+  it('reports the count in a live region, so filtering is announced', async () => {
+    await renderServices();
 
     const status = screen.getByRole('status');
     expect(status).toHaveTextContent(`${SERVICES.length} services shown`);
@@ -39,7 +50,7 @@ describe('Services page', () => {
 
   it('narrows the grid to cat services', async () => {
     const user = userEvent.setup();
-    renderWithRouter(<Services />);
+    await renderServices();
 
     await user.click(screen.getByLabelText('Cats'));
 
@@ -51,7 +62,7 @@ describe('Services page', () => {
 
   it('narrows the grid to dog services', async () => {
     const user = userEvent.setup();
-    renderWithRouter(<Services />);
+    await renderServices();
 
     await user.click(screen.getByLabelText('Dogs'));
 
@@ -63,7 +74,7 @@ describe('Services page', () => {
 
   it('drops services that do not suit the chosen pet', async () => {
     const user = userEvent.setup();
-    renderWithRouter(<Services />);
+    await renderServices();
 
     // Daycare is dogs only, so it must disappear under the cat filter.
     expect(screen.getByRole('link', { name: /doggy daycare/i })).toBeInTheDocument();

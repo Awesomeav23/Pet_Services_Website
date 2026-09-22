@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import PriceBadge from './PriceBadge.jsx';
-import { PET_TYPE_LABELS } from '../data/services.js';
+import { PET_TYPE_LABELS } from '../data/pet-types.js';
 import { formatDuration } from '../utils/format.js';
 import styles from './ServiceCard.module.css';
 

@@ -1,4 +1,4 @@
-import { PET_TYPE_FILTERS } from '../data/services.js';
+import { PET_TYPE_FILTERS } from '../data/pet-types.js';
 import styles from './ServiceFilter.module.css';
 
 /**

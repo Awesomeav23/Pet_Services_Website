@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
@@ -7,20 +8,44 @@ import ServiceGrid from '../components/ServiceGrid.jsx';
 import SectionHeading from '../components/SectionHeading.jsx';
 import NotFound from './NotFound.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
-import {
-  getServiceById,
-  SERVICES,
-  PET_TYPE_LABELS,
-} from '../data/services.js';
+import { fetchService, fetchServices } from '../api/client.js';
+import useAsync from '../hooks/useAsync.js';
+import { PET_TYPE_LABELS } from '../data/pet-types.js';
 import { formatDuration, formatList } from '../utils/format.js';
 import styles from './ServiceDetail.module.css';
 
 export default function ServiceDetail() {
   const { serviceId } = useParams();
-  const service = getServiceById(serviceId);
+
+  const loadService = useCallback(() => fetchService(serviceId), [serviceId]);
+  const { data: service, error, isLoading } = useAsync(loadService, [loadService]);
+
+  // Related services need the rest of the catalogue. Requested alongside the
+  // detail rather than after it, so the two round trips overlap.
+  const { data: catalogue } = useAsync(() => fetchServices(), []);
+
+  useDocumentTitle(service ? service.name : isLoading ? 'Loading' : 'Page not found');
+
+  if (isLoading) {
+    return (
+      <section className="section container">
+        <p role="status">Loading service…</p>
+      </section>
+    );
+  }
+
+  // A server that could not be reached is a different problem from a service
+  // that does not exist, and saying "page not found" for the first would be a
+  // lie the user acts on by giving up.
+  if (error && error.status !== 404) {
+    return (
+      <section className="section container">
+        <p role="alert">{error.message}</p>
+      </section>
+    );
+  }
 
   // A bad or stale URL must not crash the route; fall through to the 404 page.
-  useDocumentTitle(service ? service.name : 'Page not found');
   if (!service) return <NotFound />;
 
   const {
@@ -36,9 +61,9 @@ export default function ServiceDetail() {
     includes,
   } = service;
 
-  const relatedServices = SERVICES.filter(
-    (item) => item.id !== id && item.petTypes.some((p) => petTypes.includes(p))
-  ).slice(0, 3);
+  const relatedServices = (catalogue ?? [])
+    .filter((item) => item.id !== id && item.petTypes.some((p) => petTypes.includes(p)))
+    .slice(0, 3);
 
   const petLabels = petTypes.map((petType) => PET_TYPE_LABELS[petType]);
 

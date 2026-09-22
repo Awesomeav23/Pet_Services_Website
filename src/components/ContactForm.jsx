@@ -2,11 +2,8 @@ import { useRef, useState } from 'react';
 
 import FormField from './FormField.jsx';
 import ErrorSummary from './ErrorSummary.jsx';
-import {
-  validateRequired,
-  validateEmail,
-  isBlank,
-} from '../utils/validation.js';
+import { sendContactMessage } from '../api/client.js';
+import { validateContactMessage } from '../utils/validation.js';
 import styles from './ContactForm.module.css';
 
 const EMPTY_MESSAGE = {
@@ -29,27 +26,12 @@ const SUBJECTS = [
   { value: 'feedback', label: 'Feedback or complaint' },
 ];
 
-/** Same validate/announce/focus pattern as the booking form. */
-const validate = (form) => {
-  const errors = {
-    name: validateRequired(form.name, 'Your name'),
-    email: validateEmail(form.email),
-    message: isBlank(form.message)
-      ? 'Message is required'
-      : form.message.trim().length < 10
-        ? 'Please give us a little more detail (at least 10 characters)'
-        : undefined,
-  };
-
-  return Object.fromEntries(
-    Object.entries(errors).filter(([, value]) => value !== undefined)
-  );
-};
-
 export default function ContactForm() {
   const [form, setForm] = useState(EMPTY_MESSAGE);
   const [errors, setErrors] = useState({});
   const [isSent, setIsSent] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState('');
 
   const errorSummaryRef = useRef(null);
   const successRef = useRef(null);
@@ -65,10 +47,10 @@ export default function ContactForm() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const nextErrors = validate(form);
+    const nextErrors = validateContactMessage(form);
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -76,10 +58,26 @@ export default function ContactForm() {
       return;
     }
 
-    // No backend in this project — the message is acknowledged locally.
-    setIsSent(true);
-    setForm(EMPTY_MESSAGE);
-    window.requestAnimationFrame(() => successRef.current?.focus());
+    setIsSending(true);
+    setSendError('');
+
+    try {
+      await sendContactMessage(form);
+      setIsSent(true);
+      setForm(EMPTY_MESSAGE);
+      window.requestAnimationFrame(() => successRef.current?.focus());
+    } catch (error) {
+      // Same split as the booking form: field-level rejections rejoin the
+      // normal error flow, anything else is reported as a send failure.
+      if (Object.keys(error.fieldErrors ?? {}).length > 0) {
+        setErrors(error.fieldErrors);
+        window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
+      } else {
+        setSendError(error.message);
+      }
+    } finally {
+      setIsSending(false);
+    }
   };
 
   if (isSent) {
@@ -165,9 +163,15 @@ export default function ContactForm() {
         error={errors.message}
       />
 
-      <button type="submit" className={styles.submit}>
-        Send message
+      <button type="submit" className={styles.submit} disabled={isSending}>
+        {isSending ? 'Sending…' : 'Send message'}
       </button>
+
+      {sendError && (
+        <p className={styles.error} role="alert">
+          {sendError}
+        </p>
+      )}
     </form>
   );
 }

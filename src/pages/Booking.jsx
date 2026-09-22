@@ -10,7 +10,8 @@ import ConfirmationPanel from '../components/ConfirmationPanel.jsx';
 import Button from '../components/Button.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import useLocalStorage from '../hooks/useLocalStorage.js';
-import { SERVICES, getServiceById } from '../data/services.js';
+import { createBooking, fetchServices } from '../api/client.js';
+import useAsync from '../hooks/useAsync.js';
 import { formatPrice } from '../utils/format.js';
 import { validateStep } from '../utils/validation.js';
 import styles from './Booking.module.css';
@@ -44,10 +45,6 @@ const FIELD_LABELS = {
   consent: 'Contact consent',
 };
 
-/** Reference such as "PAW-4F2A19". */
-const createReference = () =>
-  `PAW-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-
 /** Today as yyyy-mm-dd for the date input's min attribute. */
 const todayISO = () => {
   const now = new Date();
@@ -66,6 +63,9 @@ export default function Booking() {
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState({});
   const [confirmation, setConfirmation] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // A transport-level failure, as opposed to the per-field errors above.
+  const [submitError, setSubmitError] = useState('');
 
   const headingRef = useRef(null);
   const errorSummaryRef = useRef(null);
@@ -73,20 +73,25 @@ export default function Booking() {
   // Focus should only move on user-driven step changes, not on first paint.
   const hasInteracted = useRef(false);
 
-  // Deep link from a service detail page: /booking?service=grooming
+  const { data: catalogue, error: catalogueError } = useAsync(() => fetchServices(), []);
+  const services = catalogue ?? [];
+
+  // Deep link from a service detail page: /booking?service=grooming.
+  // Waits for the catalogue: a service id can only be trusted once there is
+  // something to check it against.
   useEffect(() => {
     const requested = searchParams.get('service');
-    if (requested && getServiceById(requested)) {
+    if (requested && services.some((service) => service.id === requested)) {
       setForm((prev) => ({ ...prev, serviceId: requested }));
     }
-  }, [searchParams, setForm]);
+  }, [searchParams, setForm, catalogue]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Moving to a new step must announce itself; focus the step heading.
   useEffect(() => {
     if (hasInteracted.current) headingRef.current?.focus();
   }, [currentStep]);
 
-  const selectedService = getServiceById(form.serviceId);
+  const selectedService = services.find((service) => service.id === form.serviceId);
 
   const updateField = (name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -130,7 +135,7 @@ export default function Booking() {
     goToStep(currentStep - 1);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const stepErrors = validateStep(currentStep, form);
@@ -141,22 +146,32 @@ export default function Booking() {
       return;
     }
 
-    // No backend in this project; the request is persisted locally so the
-    // confirmation has something real to show.
-    const reference = createReference();
-    const submitted = { ...form, reference, submittedAt: new Date().toISOString() };
+    setIsSubmitting(true);
+    setSubmitError('');
 
     try {
-      const key = 'pawsome:booking-requests';
-      const existing = JSON.parse(window.localStorage.getItem(key) ?? '[]');
-      window.localStorage.setItem(key, JSON.stringify([...existing, submitted]));
-    } catch {
-      // Storage unavailable — the confirmation is still shown.
-    }
+      const { reference, submittedAt } = await createBooking(form);
 
-    setConfirmation({ reference, form: submitted, service: selectedService });
-    clearStoredForm();
-    window.requestAnimationFrame(() => confirmationRef.current?.focus());
+      setConfirmation({
+        reference,
+        form: { ...form, reference, submittedAt },
+        service: selectedService,
+      });
+      clearStoredForm();
+      window.requestAnimationFrame(() => confirmationRef.current?.focus());
+    } catch (error) {
+      // A 422 means the server rejected specific fields. Those go into the
+      // same error state the client-side checks use, so the error summary and
+      // per-field messages behave identically either way.
+      if (Object.keys(error.fieldErrors ?? {}).length > 0) {
+        setErrors(error.fieldErrors);
+        window.requestAnimationFrame(() => errorSummaryRef.current?.focus());
+      } else {
+        setSubmitError(error.message);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -220,8 +235,14 @@ export default function Booking() {
                   </p>
                 )}
 
+                {catalogueError && (
+                  <p className={styles.fieldsetError} role="alert">
+                    {catalogueError.message}
+                  </p>
+                )}
+
                 <div className={styles.serviceOptions}>
-                  {SERVICES.map((service) => {
+                  {services.map((service) => {
                     const inputId = `service-${service.id}`;
 
                     return (
@@ -431,13 +452,19 @@ export default function Booking() {
               )}
 
               {isLastStep ? (
-                <button type="submit" className={styles.submit}>
-                  Send request
+                <button type="submit" className={styles.submit} disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending…' : 'Send request'}
                 </button>
               ) : (
                 <Button onClick={handleNext}>Continue</Button>
               )}
             </div>
+
+            {submitError && (
+              <p className={styles.fieldsetError} role="alert">
+                {submitError}
+              </p>
+            )}
           </form>
         </div>
 

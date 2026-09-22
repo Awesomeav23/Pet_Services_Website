@@ -3,7 +3,7 @@ import { screen, within } from '@testing-library/react';
 
 import Home from './Home.jsx';
 import { renderWithRouter } from '../test/utils.jsx';
-import { getPopularServices } from '../data/services.js';
+import { SERVICES } from '../data/services.js';
 import { getFeaturedTestimonials } from '../data/testimonials.js';
 
 describe('Home page', () => {
@@ -25,12 +25,13 @@ describe('Home page', () => {
     ).toHaveAttribute('href', '/services');
   });
 
-  it('previews only the popular services, not the whole catalogue', () => {
+  it('previews only the popular services, not the whole catalogue', async () => {
     renderWithRouter(<Home />);
 
-    const popular = screen.getByRole('list', { name: /popular services/i });
+    // The catalogue is fetched, so the grid is absent on first paint.
+    const popular = await screen.findByRole('list', { name: /popular services/i });
     expect(within(popular).getAllByRole('link')).toHaveLength(
-      getPopularServices().length
+      SERVICES.filter((service) => service.popular).length
     );
   });
 

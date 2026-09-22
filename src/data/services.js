@@ -1,8 +1,10 @@
 /**
- * Service catalogue.
+ * Service catalogue — seed data.
  *
- * Static module for now; the shape matches what a REST endpoint would return,
- * so swapping this import for a fetch() later requires no component changes.
+ * No longer imported by the app: the components read this catalogue from
+ * GET /api/services at runtime. It stays here as the single source the
+ * database is seeded from (server/src/seed.js), which keeps the seven
+ * services defined in exactly one place and keeps them out of the JS bundle.
  */
 export const SERVICES = [
   {
@@ -146,27 +148,3 @@ export const SERVICES = [
     ],
   },
 ];
-
-/** Filter options for the services page. `all` must stay first. */
-export const PET_TYPE_FILTERS = [
-  { value: 'all', label: 'All pets' },
-  { value: 'dog', label: 'Dogs' },
-  { value: 'cat', label: 'Cats' },
-];
-
-/** Human-readable labels for the petTypes stored on each service. */
-export const PET_TYPE_LABELS = {
-  dog: 'Dogs',
-  cat: 'Cats',
-};
-
-export const getServiceById = (id) =>
-  SERVICES.find((service) => service.id === id);
-
-export const getPopularServices = () =>
-  SERVICES.filter((service) => service.popular);
-
-export const filterServicesByPetType = (petType) =>
-  petType === 'all'
-    ? SERVICES
-    : SERVICES.filter((service) => service.petTypes.includes(petType));

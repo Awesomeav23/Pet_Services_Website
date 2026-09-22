@@ -4,7 +4,8 @@ import ServiceGrid from '../components/ServiceGrid.jsx';
 import TestimonialCard from '../components/TestimonialCard.jsx';
 import Button from '../components/Button.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
-import { getPopularServices } from '../data/services.js';
+import { fetchServices } from '../api/client.js';
+import useAsync from '../hooks/useAsync.js';
 import { getFeaturedTestimonials } from '../data/testimonials.js';
 import styles from './Home.module.css';
 
@@ -29,7 +30,11 @@ const STEPS = [
 export default function Home() {
   useDocumentTitle('Home');
 
-  const popularServices = getPopularServices();
+  // Fetches the whole catalogue rather than a dedicated endpoint: the
+  // response is cached for five minutes and shared with the services page, so
+  // the visitor who clicks through pays for one request, not two.
+  const { data: services } = useAsync(() => fetchServices(), []);
+  const popularServices = (services ?? []).filter((service) => service.popular);
   const featuredTestimonials = getFeaturedTestimonials();
 
   return (
@@ -44,7 +49,9 @@ export default function Home() {
             description="Three services book out first each week. Browse the full list to see everything we offer."
             id="popular-title"
           />
-          <ServiceGrid services={popularServices} label="Popular services" />
+          {popularServices.length > 0 && (
+            <ServiceGrid services={popularServices} label="Popular services" />
+          )}
           <div className={styles.popularAction}>
             <Button to="/services" variant="secondary">
               View all seven services

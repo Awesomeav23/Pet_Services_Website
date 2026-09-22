@@ -3,10 +3,10 @@ import { screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import Booking from './Booking.jsx';
+import { createBooking } from '../api/client.js';
 import { renderWithRouter } from '../test/utils.jsx';
 
 const DRAFT_KEY = 'pawsome:booking-draft';
-const REQUESTS_KEY = 'pawsome:booking-requests';
 
 /**
  * A date a fixed distance in the future, derived from the real clock.
@@ -28,7 +28,7 @@ const stepHeading = (name) => screen.getByRole('heading', { level: 2, name });
 
 /** Walk the form from step 1 to step 2 with a service chosen. */
 const goToDetailsStep = async (user) => {
-  await user.click(screen.getByRole('radio', { name: /grooming/i }));
+  await user.click(await screen.findByRole('radio', { name: /grooming/i }));
   await user.click(continueButton());
 };
 
@@ -198,7 +198,7 @@ describe('Booking page — submission', () => {
     await waitFor(() => expect(screen.getByRole('status')).toHaveFocus());
   });
 
-  it('stores the submitted request and clears the draft', async () => {
+  it('sends the request to the API and clears the draft', async () => {
     const user = userEvent.setup();
     renderWithRouter(<Booking />);
 
@@ -211,14 +211,17 @@ describe('Booking page — submission', () => {
 
     await screen.findByRole('heading', { name: /request received/i });
 
-    const stored = JSON.parse(window.localStorage.getItem(REQUESTS_KEY));
-    expect(stored).toHaveLength(1);
-    expect(stored[0]).toMatchObject({
-      serviceId: 'grooming',
-      petName: 'Bramble',
-      email: 'elena@example.com',
-    });
-    expect(stored[0].reference).toMatch(/^PAW-/);
+    expect(createBooking).toHaveBeenCalledTimes(1);
+    expect(createBooking).toHaveBeenCalledWith(
+      expect.objectContaining({
+        serviceId: 'grooming',
+        petName: 'Bramble',
+        email: 'elena@example.com',
+      })
+    );
+
+    // The reference on screen is the server's, not one the client invented.
+    expect(screen.getByText(/PAW-TEST01/)).toBeInTheDocument();
 
     // The draft must not survive submission, or the next visitor to this
     // browser starts with someone else's answers.
@@ -227,32 +230,33 @@ describe('Booking page — submission', () => {
 });
 
 describe('Booking page — deep linking and drafts', () => {
-  it('pre-selects the service named in the query string', () => {
+  it('pre-selects the service named in the query string', async () => {
     renderWithRouter(<Booking />, { route: '/booking?service=boarding' });
 
-    expect(screen.getByRole('radio', { name: /overnight boarding/i })).toBeChecked();
+    expect(
+      await screen.findByRole('radio', { name: /overnight boarding/i })
+    ).toBeChecked();
   });
 
-  it('ignores an unknown service in the query string', () => {
+  it('ignores an unknown service in the query string', async () => {
     renderWithRouter(<Booking />, { route: '/booking?service=nonsense' });
 
-    screen
-      .getAllByRole('radio')
-      .forEach((radio) => expect(radio).not.toBeChecked());
+    const radios = await screen.findAllByRole('radio');
+    radios.forEach((radio) => expect(radio).not.toBeChecked());
   });
 
   it('shows the chosen service in the running summary', async () => {
     const user = userEvent.setup();
     renderWithRouter(<Booking />);
 
-    await user.click(screen.getByRole('radio', { name: /overnight boarding/i }));
+    await user.click(await screen.findByRole('radio', { name: /overnight boarding/i }));
 
     const summary = screen.getByRole('complementary', { name: /your request/i });
     expect(summary).toHaveTextContent('Overnight Boarding');
     expect(summary).toHaveTextContent('$48');
   });
 
-  it('restores a saved draft on mount', () => {
+  it('restores a saved draft on mount', async () => {
     window.localStorage.setItem(
       DRAFT_KEY,
       JSON.stringify({
@@ -271,7 +275,9 @@ describe('Booking page — deep linking and drafts', () => {
     renderWithRouter(<Booking />);
 
     // An accidental refresh must not cost the visitor their answers.
-    expect(screen.getByRole('radio', { name: /obedience training/i })).toBeChecked();
+    expect(
+      await screen.findByRole('radio', { name: /obedience training/i })
+    ).toBeChecked();
     expect(
       screen.getByRole('complementary', { name: /your request/i })
     ).toHaveTextContent('Juno');

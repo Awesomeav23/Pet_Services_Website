@@ -231,3 +231,8 @@
     gap: var(--space-8);
   }
 }
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}

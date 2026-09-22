@@ -1,11 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import SectionHeading from '../components/SectionHeading.jsx';
 import ServiceFilter from '../components/ServiceFilter.jsx';
 import ServiceGrid from '../components/ServiceGrid.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
-import { filterServicesByPetType, PET_TYPE_FILTERS } from '../data/services.js';
+import { fetchServices } from '../api/client.js';
+import useAsync from '../hooks/useAsync.js';
+import { PET_TYPE_FILTERS } from '../data/pet-types.js';
 import { pluralize } from '../utils/format.js';
 import styles from './Services.module.css';
 
@@ -14,10 +16,10 @@ export default function Services() {
 
   const [petType, setPetType] = useState('all');
 
-  const visibleServices = useMemo(
-    () => filterServicesByPetType(petType),
-    [petType]
-  );
+  // Filtering happens in SQL, so changing the pet type refetches rather than
+  // narrowing an already-loaded list.
+  const load = useCallback(() => fetchServices(petType), [petType]);
+  const { data: visibleServices, error, isLoading } = useAsync(load, [load]);
 
   const activeFilterLabel = PET_TYPE_FILTERS.find(
     (option) => option.value === petType
@@ -38,12 +40,28 @@ export default function Services() {
         {/* Announced politely so filtering is reported to screen-reader users,
             who would otherwise get no feedback that the grid changed. */}
         <p className={styles.count} role="status" aria-live="polite">
-          {pluralize(visibleServices.length, 'service')} shown
-          {petType !== 'all' && ` for ${activeFilterLabel?.toLowerCase()}`}
+          {isLoading
+            ? 'Loading services…'
+            : error
+              ? 'Services unavailable'
+              : `${pluralize(visibleServices.length, 'service')} shown${
+                  petType !== 'all' ? ` for ${activeFilterLabel?.toLowerCase()}` : ''
+                }`}
         </p>
       </div>
 
-      {visibleServices.length > 0 ? (
+      {error ? (
+        <EmptyState
+          title="We could not load our services"
+          description={error.message}
+          actionLabel="Try again"
+          onAction={() => setPetType((current) => current)}
+        />
+      ) : isLoading ? (
+        // Not a spinner: the status line above already announces the load, and
+        // a second live region would double up for screen-reader users.
+        <p className={styles.count}>Loading…</p>
+      ) : visibleServices.length > 0 ? (
         <ServiceGrid services={visibleServices} label="Available services" />
       ) : (
         <EmptyState
