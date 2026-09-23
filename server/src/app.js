@@ -25,6 +25,43 @@ export const createApp = () => {
 
   app.get('/api/health', (request, response) => response.json({ status: 'ok' }));
 
+  /**
+   * Whether this deployment can reach its database, and which one it thinks it
+   * has. Unauthenticated on purpose: it answers only questions a stranger could
+   * already answer by watching the site fail, and it is the difference between
+   * diagnosing a deployment with one request and reading a dashboard.
+   *
+   * The connection string is never returned. Only the host and database name
+   * are, with credentials stripped, because "is DATABASE_URL even set, and is
+   * it pointing where I think" is the question that actually comes up.
+   */
+  app.get('/api/healthz', async (request, response) => {
+    const url = process.env.DATABASE_URL;
+    let target = null;
+    if (url) {
+      try {
+        const parsed = new URL(url);
+        target = `${parsed.host}${parsed.pathname}`;
+      } catch {
+        target = 'unparseable';
+      }
+    }
+
+    try {
+      const { pool } = await import('../src/db.js');
+      await pool.query('select 1');
+      return response.json({ status: 'ok', db: 'ok', configured: Boolean(url), target });
+    } catch (error) {
+      return response.status(503).json({
+        status: 'degraded',
+        db: 'unreachable',
+        configured: Boolean(url),
+        target,
+        reason: error?.code ?? error?.message ?? 'unknown',
+      });
+    }
+  });
+
   app.use('/api/services', servicesRouter);
   app.use('/api/bookings', bookingsRouter);
   app.use('/api/contact', contactRouter);
