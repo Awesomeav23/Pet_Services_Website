@@ -7,7 +7,21 @@
  * behind the user's back.
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api';
+/**
+ * Same origin once deployed, because the site and the API ship from one Vercel
+ * project — so there is nothing to configure in production and CORS never
+ * applies. In development they are two processes on two ports, so the local
+ * API is the default there.
+ *
+ * Resolved from the hostname rather than from a build-time variable, so a
+ * deploy cannot silently ship a bundle pointing at localhost:4000.
+ */
+const BASE_URL = import.meta.env.VITE_API_URL
+  ?? (typeof location !== 'undefined'
+      && location.hostname !== 'localhost'
+      && location.hostname !== '127.0.0.1'
+    ? '/api'
+    : 'http://localhost:4000/api');
 
 /**
  * Thrown for any non-2xx response.
