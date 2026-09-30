@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import ServiceFilter from './ServiceFilter.jsx';
+import { PET_TYPE_FILTERS } from '../data/pet-types.js';
 
 describe('ServiceFilter', () => {
   it('is grouped as a labelled set of radios, not loose buttons', () => {
@@ -13,7 +14,7 @@ describe('ServiceFilter', () => {
     expect(
       screen.getByRole('group', { name: /filter services by pet/i })
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('radio')).toHaveLength(3);
+    expect(screen.getAllByRole('radio')).toHaveLength(PET_TYPE_FILTERS.length);
   });
 
   it('gives every option a visible, associated label', () => {
@@ -22,6 +23,7 @@ describe('ServiceFilter', () => {
     expect(screen.getByLabelText('All pets')).toBeInTheDocument();
     expect(screen.getByLabelText('Dogs')).toBeInTheDocument();
     expect(screen.getByLabelText('Cats')).toBeInTheDocument();
+    expect(screen.getByLabelText('Rabbits')).toBeInTheDocument();
   });
 
   it('reflects the current selection', () => {
@@ -47,6 +49,10 @@ describe('ServiceFilter', () => {
     const onChange = vi.fn();
     render(<ServiceFilter value="all" onChange={onChange} />);
 
+    // The text input takes the first tab stop; the radio group takes the next.
+    await user.tab();
+    expect(screen.getByLabelText(/what's your pet/i)).toHaveFocus();
+
     await user.tab();
     expect(screen.getByLabelText('All pets')).toHaveFocus();
 
@@ -56,7 +62,7 @@ describe('ServiceFilter', () => {
     expect(onChange).toHaveBeenCalledWith('dog');
   });
 
-  it('takes a single tab stop for the whole group', async () => {
+  it('keeps the pill group to a single tab stop', async () => {
     const user = userEvent.setup();
     render(
       <>
@@ -64,6 +70,11 @@ describe('ServiceFilter', () => {
         <button type="button">After</button>
       </>
     );
+
+    // Two stops belong to the filter — the text input and the pill group —
+    // then focus leaves for the next control on the page.
+    await user.tab();
+    expect(screen.getByLabelText(/what's your pet/i)).toHaveFocus();
 
     await user.tab();
     expect(screen.getByLabelText('All pets')).toHaveFocus();

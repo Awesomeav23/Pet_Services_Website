@@ -50,7 +50,9 @@ describe('ServiceDetail page', () => {
     expect(screen.getByText('Typical length')).toBeInTheDocument();
     expect(screen.getByText('Full day')).toBeInTheDocument();
     expect(screen.getByText('Suitable for')).toBeInTheDocument();
-    expect(screen.getByText('Dogs and Cats')).toBeInTheDocument();
+    expect(
+      screen.getByText('Dogs, Cats, Rabbits, Birds, Small mammals and Reptiles'),
+    ).toBeInTheDocument();
   });
 
   it('deep links the booking button to this service', async () => {
