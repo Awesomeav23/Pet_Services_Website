@@ -16,7 +16,7 @@ export const SERVICES = [
     price: 55,
     priceUnit: 'per visit',
     duration: 90,
-    petTypes: ['dog', 'cat'],
+    petTypes: ['dog', 'cat', 'rabbit', 'small-mammal'],
     icon: '🛁',
     popular: true,
     includes: [
@@ -36,7 +36,7 @@ export const SERVICES = [
     price: 48,
     priceUnit: 'per night',
     duration: 1440,
-    petTypes: ['dog', 'cat'],
+    petTypes: ['dog', 'cat', 'rabbit', 'bird', 'small-mammal', 'reptile'],
     icon: '🏠',
     popular: true,
     includes: [
@@ -96,7 +96,7 @@ export const SERVICES = [
     price: 70,
     priceUnit: 'per session',
     duration: 60,
-    petTypes: ['dog'],
+    petTypes: ['dog', 'bird'],
     icon: '🎓',
     popular: false,
     includes: [
@@ -116,7 +116,7 @@ export const SERVICES = [
     price: 65,
     priceUnit: 'per exam',
     duration: 45,
-    petTypes: ['dog', 'cat'],
+    petTypes: ['dog', 'cat', 'rabbit', 'bird', 'small-mammal', 'reptile', 'fish'],
     icon: '🩺',
     popular: false,
     includes: [
@@ -136,7 +136,7 @@ export const SERVICES = [
     price: 30,
     priceUnit: 'per trip',
     duration: 45,
-    petTypes: ['dog', 'cat'],
+    petTypes: ['dog', 'cat', 'rabbit', 'bird', 'small-mammal', 'reptile', 'fish'],
     icon: '🚐',
     popular: false,
     includes: [

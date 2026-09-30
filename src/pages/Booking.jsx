@@ -298,6 +298,11 @@ export default function Booking() {
                   >
                     <option value="dog">Dog</option>
                     <option value="cat">Cat</option>
+                    <option value="rabbit">Rabbit</option>
+                    <option value="bird">Bird</option>
+                    <option value="small-mammal">Small mammal</option>
+                    <option value="reptile">Reptile</option>
+                    <option value="fish">Fish</option>
                   </FormField>
 
                   <FormField
