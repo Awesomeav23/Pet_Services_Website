@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { validateContactMessage } from '../../../src/utils/validation.js';
 import { query } from '../db.js';
+import { sendContactEmails } from '../mailer.js';
 
 export const contactRouter = Router();
 
@@ -29,6 +30,8 @@ contactRouter.post('/', async (request, response, next) => {
        RETURNING id, created_at`,
       [form.name.trim(), form.email.trim(), form.subject, form.message.trim()],
     );
+
+    await sendContactEmails({ form });
 
     response.status(201).json({ id: rows[0].id, receivedAt: rows[0].created_at });
   } catch (error) {

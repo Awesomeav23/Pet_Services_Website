@@ -6,6 +6,7 @@ import {
   validateServiceStep,
 } from '../../../src/utils/validation.js';
 import { query } from '../db.js';
+import { sendBookingEmails } from '../mailer.js';
 
 export const bookingsRouter = Router();
 
@@ -45,7 +46,7 @@ bookingsRouter.post('/', async (request, response, next) => {
 
     // Checked separately from the field validators: this is a referential
     // question, not a formatting one, and it needs the database to answer.
-    const service = await query('SELECT id FROM services WHERE id = $1', [form.serviceId]);
+    const service = await query('SELECT id, name FROM services WHERE id = $1', [form.serviceId]);
 
     if (service.rows.length === 0) {
       return response
@@ -75,6 +76,12 @@ bookingsRouter.post('/', async (request, response, next) => {
         Boolean(form.consent),
       ],
     );
+
+    await sendBookingEmails({
+      reference: rows[0].reference,
+      service: service.rows[0],
+      form,
+    });
 
     response.status(201).json({
       reference: rows[0].reference,
