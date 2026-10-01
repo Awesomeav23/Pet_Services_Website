@@ -24,6 +24,7 @@ Behind it is a **Node.js and Express** API over **PostgreSQL**: five REST endpoi
 - [Responsive design](#responsive-design)
 - [Performance](#performance)
 - [Deployment](#deployment)
+- [Possible future enhancements](#possible-future-enhancements)
 - [All available commands](#all-available-commands)
 
 ---
@@ -448,6 +449,42 @@ Both config files are already included:
 
 - `public/_redirects` — for Netlify
 - `vercel.json` — for Vercel
+
+---
+
+## Possible future enhancements
+
+Ideas for taking the site from a working demo toward a real business tool. **None are blockers** — the site functions end-to-end without any of them. Pick one if you want to extend the project, or ignore the list entirely.
+
+### Small (roughly half a day each)
+
+- **Verify a domain in Resend** — right now outbound email ships from the shared `onboarding@resend.dev` test sender, which can only deliver the *customer confirmation* copy to the Resend account owner's address. Verifying a domain (one DNS record and a `MAIL_FROM` env-var change) means real customers get their confirmations too.
+- **Admin page for bookings and contact messages** — a password-gated `/admin` route listing recent submissions straight from the database. Currently the only way to see them is to SQL into Neon.
+- **Rate limiting on the POST endpoints** — one piece of middleware to stop someone spamming the booking/contact forms and burning through the Resend quota.
+- **Form niceties** — a honeypot field for spam, dedupe for double-clicked submissions, loading state on the submit button.
+- **SEO basics** — Open Graph tags, a sitemap, per-page `<title>` audit.
+
+### Medium (one to two days each)
+
+- **Availability calendar** — the booking form currently accepts any date and time. A real booking flow would read from a `business_hours` + `blocked_slots` table and only offer slots that are actually free.
+- **Branded email templates** — the current confirmations are plain system-font HTML. Something built with React Email or MJML would ship with the logo, brand colours and a footer.
+- **Admin can mark bookings confirmed/cancelled** — adds a status column, actions on the admin page, and a status-change notification email.
+- **Image gallery per service** — service pages show an emoji icon today. Real photos (via Vercel Blob, Cloudinary, or `/public`) would make it feel like a real business.
+
+### Larger (project-scale)
+
+- **User accounts** — customers log in, see booking history, update pet profiles. Adds authentication, session handling and account pages.
+- **Payments** — Stripe Checkout at the end of booking for a deposit, plus a webhook handler to flip the booking status when payment lands.
+- **Multi-location or staff scheduling** — if the business grew to multiple branches or named staff, each slot would need an assignment.
+- **CMS for the catalogue** — right now editing a service means editing `services.js`, re-seeding the DB and redeploying. A `/admin/services` editor would let a non-developer update copy and prices.
+- **Real reviews** — the testimonials page is static. A real version would collect ratings tied to completed bookings.
+
+### Polish
+
+- **Error monitoring** — Sentry (or similar) on both the frontend and the serverless function, so you learn about errors before customers do.
+- **Analytics** — Plausible, Fathom or Vercel Analytics to see which services get viewed most and where booking abandonment happens.
+- **Formal accessibility audit** — the structure is already accessibility-first (semantic HTML, real radios, proper labels, measured contrast), but a full axe-core pass and keyboard-only walkthrough would catch anything the automated checks miss.
+- **Lighthouse pass** — image lazy-loading, bundle-size trimming, font-loading strategy.
 
 ---
 
